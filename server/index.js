@@ -1,3 +1,12 @@
+const fs = require('fs');
+const path = require('path');
+
+// Optionally load environment variables from local .env file
+const envPath = path.join(__dirname, '.env');
+if (fs.existsSync(envPath) && typeof process.loadEnvFile === 'function') {
+  process.loadEnvFile(envPath);
+}
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -38,7 +47,9 @@ const allowedOrigins = [
   'http://localhost:3000',
   'http://localhost:5173',
   'https://stadiumsaathi-prod-98.firebaseapp.com',
-  'https://stadiumsaathi-prod-98.web.app'
+  'https://stadiumsaathi-prod-98.web.app',
+  'https://stadiumsaathi-399b9.firebaseapp.com',
+  'https://stadiumsaathi-399b9.web.app'
 ];
 
 app.use(cors({
