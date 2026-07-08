@@ -12,14 +12,14 @@ StadiumSaathi is a Generative AI-enabled solution designed to enhance stadium op
 
 ## How StadiumSaathi Addresses This
 Each capability called for in the problem statement is implemented by a dedicated file or component in this repository:
-- **Navigation**: Managed visually via the interactive map component [MapView.tsx](file:///c:/Users/User/Desktop/FIFASaathi/client/src/components/MapView.tsx) and AI routing paths inside [Wayfinding.tsx](file:///c:/Users/User/Desktop/FIFASaathi/client/src/components/Wayfinding.tsx).
-- **Crowd Management**: Handled via interval-based Firestore congestion feeds in [CrowdDashboard.tsx](file:///c:/Users/User/Desktop/FIFASaathi/client/src/components/CrowdDashboard.tsx).
-- **Accessibility**: Customized path recommendations mapped from spectator selections inside [AccessibilitySetup.tsx](file:///c:/Users/User/Desktop/FIFASaathi/client/src/components/AccessibilitySetup.tsx).
-- **Transportation**: Calculated travel and parking options mapped relative to kickoff timings inside [Transportation.tsx](file:///c:/Users/User/Desktop/FIFASaathi/client/src/components/Transportation.tsx).
-- **Sustainability**: Handled via Eco-friendly wayfinding guidelines and waste-reduction hints inside the system prompt builder in [geminiService.js](file:///c:/Users/User/Desktop/FIFASaathi/server/services/geminiService.js).
-- **Multilingual Assistance**: Driven by user language selections mapped in [App.tsx](file:///c:/Users/User/Desktop/FIFASaathi/client/src/App.tsx) and compiled inside the system prompt in [geminiService.js](file:///c:/Users/User/Desktop/FIFASaathi/server/services/geminiService.js).
-- **Operational Intelligence**: Driven by server-side AI model routing rules in [aiService.js](file:///c:/Users/User/Desktop/FIFASaathi/server/services/aiService.js), ensuring models coordinate to offer operational insights.
-- **Real-Time Decision Support**: Programmed inside the custom AI system prompt builder in [geminiService.js](file:///c:/Users/User/Desktop/FIFASaathi/server/services/geminiService.js), giving immediate actionable instructions to fans and staff.
+- **Navigation**: Managed visually via the interactive map component [MapView.tsx](client/src/components/MapView.tsx) and AI routing paths inside [Wayfinding.tsx](client/src/components/Wayfinding.tsx).
+- **Crowd Management**: Handled via interval-based Firestore congestion feeds in [CrowdDashboard.tsx](client/src/components/CrowdDashboard.tsx).
+- **Accessibility**: Customized path recommendations mapped from spectator selections inside [AccessibilitySetup.tsx](client/src/components/AccessibilitySetup.tsx).
+- **Transportation**: Calculated travel and parking options mapped relative to kickoff timings inside [Transportation.tsx](client/src/components/Transportation.tsx).
+- **Sustainability**: Handled via Eco-friendly wayfinding guidelines and waste-reduction hints inside the system prompt builder in [geminiService.js](server/services/geminiService.js).
+- **Multilingual Assistance**: Driven by user language selections mapped in [App.tsx](client/src/App.tsx) and compiled inside the system prompt in [geminiService.js](server/services/geminiService.js).
+- **Operational Intelligence**: Driven by server-side AI model routing rules in [aiService.js](server/services/aiService.js), ensuring models coordinate to offer operational insights.
+- **Real-Time Decision Support**: Programmed inside the custom AI system prompt builder in [geminiService.js](server/services/geminiService.js), giving immediate actionable instructions to fans and staff.
 
 ## Core Features
 
