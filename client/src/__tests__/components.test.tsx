@@ -5,19 +5,20 @@ import { CrowdDashboard } from '../components/CrowdDashboard';
 import { AccessibilitySetup } from '../components/AccessibilitySetup';
 import { Wayfinding } from '../components/Wayfinding';
 import { Transportation } from '../components/Transportation';
+import { vi } from 'vitest';
 
 describe('StadiumSaathi Component Render & Interaction Tests', () => {
   
   // 1. MapView Tests
   describe('MapView', () => {
     it('renders the interactive fallback map successfully', () => {
-      render(<MapView selectedZone="North Gate" onSelectZone={jest.fn()} />);
+      render(<MapView selectedZone="North Gate" onSelectZone={vi.fn()} />);
       expect(screen.getByText(/StadiumSaathi Navigation Map/i)).toBeInTheDocument();
       expect(screen.getByText(/North Gate/i)).toBeInTheDocument();
     });
 
     it('triggers zone selection when fallback buttons are clicked', () => {
-      const selectZoneSpy = jest.fn();
+      const selectZoneSpy = vi.fn();
       render(<MapView selectedZone="North Gate" onSelectZone={selectZoneSpy} />);
       
       const eastButton = screen.getByText('East Stand');
@@ -29,7 +30,7 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
   // 2. CrowdDashboard Tests
   describe('CrowdDashboard', () => {
     it('renders crowd dashboard headers and items', () => {
-      render(<CrowdDashboard selectedZone="North Gate" onSelectZone={jest.fn()} />);
+      render(<CrowdDashboard selectedZone="North Gate" onSelectZone={vi.fn()} />);
       expect(screen.getByText(/Live Crowd Congestion/i)).toBeInTheDocument();
     });
   });
@@ -42,7 +43,7 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
           wheelchair={true}
           sensoryFriendly={false}
           stepFree={false}
-          onChange={jest.fn()}
+          onChange={vi.fn()}
         />
       );
       expect(screen.getByText(/Accessibility Profile Setup/i)).toBeInTheDocument();

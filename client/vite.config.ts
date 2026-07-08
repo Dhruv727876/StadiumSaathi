@@ -1,7 +1,19 @@
 import { defineConfig, loadEnv } from 'vite';
 
 export default defineConfig(({ mode }) => {
-  const env = loadEnv(mode, process.cwd(), '');
+  const env = loadEnv(mode, __dirname, 'REACT_APP_');
+  // Temporary log to inspect loaded variables during local build runs
+  // eslint-disable-next-line no-console
+  console.log('--- VITE BUILD ENV CONFIGS ---');
+  // eslint-disable-next-line no-console
+  console.log('__dirname:', __dirname);
+  // eslint-disable-next-line no-console
+  console.log('mode:', mode);
+  // eslint-disable-next-line no-console
+  console.log('REACT_APP_API_URL:', env.REACT_APP_API_URL);
+  // eslint-disable-next-line no-console
+  console.log('REACT_APP_FIREBASE_PROJECT_ID:', env.REACT_APP_FIREBASE_PROJECT_ID);
+
   return {
     define: {
       'process.env.REACT_APP_API_URL': JSON.stringify(env.REACT_APP_API_URL || 'http://localhost:5000'),

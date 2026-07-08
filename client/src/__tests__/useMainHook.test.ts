@@ -1,9 +1,10 @@
 import { renderHook, act } from '@testing-library/react';
 import { useMainHook } from '../hooks/useMainHook';
+import { vi } from 'vitest';
 
 // Mock global fetch
-const mockFetch = jest.fn();
-global.fetch = mockFetch;
+const mockFetch = vi.fn();
+global.fetch = mockFetch as unknown as typeof fetch;
 
 describe('useMainHook', () => {
   beforeEach(() => {
