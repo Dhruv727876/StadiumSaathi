@@ -39,7 +39,27 @@ export const Transportation: React.FC<TransportationProps> = React.memo(({
     setRecommendation('');
     logStadiumEvent('view_transit', { time_to_kickoff: kickoffMinutes });
 
-    const promptText = `Suggest the best transportation hub option when there are ${kickoffMinutes} minutes remaining before the FIFA World Cup kickoff. Consider standard exit/entry crowd delays and keep the recommendation brief.`;
+    let preferredOption: typeof TRANSIT_OPTIONS[number] = TRANSIT_OPTIONS[0];
+    let urgency = false;
+
+    if (kickoffMinutes < 15) {
+      urgency = true;
+      let minTime = 999;
+      TRANSIT_OPTIONS.forEach((opt) => {
+        const mins = parseInt(opt.time) || 999;
+        if (mins < minTime) {
+          minTime = mins;
+          preferredOption = opt;
+        }
+      });
+    } else if (kickoffMinutes >= 15 && kickoffMinutes < 45) {
+      const transitOpts = TRANSIT_OPTIONS.filter((opt) => opt.type === 'transit');
+      preferredOption = transitOpts[0] || TRANSIT_OPTIONS[0];
+    } else {
+      preferredOption = TRANSIT_OPTIONS[0];
+    }
+
+    const promptText = `Suggest the best transportation hub option when there are ${kickoffMinutes} minutes remaining before the FIFA World Cup kickoff. The code-level routing algorithm has pre-selected preferred option: "${preferredOption.name}" (type: ${preferredOption.type}) with urgency flag set to ${urgency}. Justify and phrase this recommendation as a brief, clear action-oriented guidance message in ${languageCode}.`;
 
     try {
       const res = await fetch(`${apiUrl}/api/chat`, {
@@ -61,7 +81,7 @@ export const Transportation: React.FC<TransportationProps> = React.memo(({
       }
     } catch (err) {
       logger.error('Failed to get transit recommendation from backend:', err);
-      setRecommendation('Offline Fallback: STADIUM_GUIDANCE: Central Metro Hub is the fastest route right now. Next step: Follow signs to Platform 2.');
+      setRecommendation(`Offline Fallback: STADIUM_GUIDANCE: ${preferredOption.name} is the recommended route right now. Next step: Follow signs to the station.`);
     } finally {
       setLoading(false);
     }

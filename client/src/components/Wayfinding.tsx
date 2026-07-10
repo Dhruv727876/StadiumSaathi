@@ -1,6 +1,7 @@
 import React, { useState, useCallback, useMemo } from 'react';
 import { logStadiumEvent } from '../firebase';
 import { logger } from '../utils/logger';
+import { ROUTE_RULES } from '../constants';
 
 /**
  * Properties for the Wayfinding component.
@@ -54,7 +55,18 @@ export const Wayfinding: React.FC<WayfindingProps> = React.memo(({
     setRouteInfo('');
     logStadiumEvent('search_route', { start: startPoint, destination });
 
-    const promptText = `Provide step-by-step route directions from starting location "${startPoint}" to gate/sector "${destination}". Keep the response concise, clear, and action-oriented.`;
+    const baseRoute = ROUTE_RULES[startPoint]?.[destination];
+    const isAccessible = accessibilityProfile && (
+      accessibilityProfile.toLowerCase().includes('wheelchair') ||
+      accessibilityProfile.toLowerCase().includes('step-free')
+    );
+
+    const pathSegments = (isAccessible && baseRoute?.accessibleAlternative)
+      ? baseRoute.accessibleAlternative
+      : (baseRoute?.viaPath || [startPoint, destination]);
+    const estimatedMin = baseRoute?.estimatedMinutes || 15;
+
+    const promptText = `Based on route data: via ${pathSegments.join(' → ')}, estimated ${estimatedMin} min. Phrase this as clear step-by-step route directions in ${languageCode} from starting location "${startPoint}" to gate/sector "${destination}". Keep the response concise, clear, and action-oriented.`;
 
     try {
       const res = await fetch(`${apiUrl}/api/chat`, {
@@ -77,7 +89,7 @@ export const Wayfinding: React.FC<WayfindingProps> = React.memo(({
       }
     } catch (err) {
       logger.error('Failed to communicate with AI wayfinding service:', err);
-      setRouteInfo('Offline Fallback: STADIUM_GUIDANCE: Walk east past the ticket checkpoint, turn right toward Gate entrance. Next step: Proceed to the entry lane.');
+      setRouteInfo(`Offline Fallback: STADIUM_GUIDANCE: Via ${pathSegments.join(' → ')}, estimated ${estimatedMin} min. Walk east past the ticket checkpoint, turn right toward Gate entrance. Next step: Proceed to the entry lane.`);
     } finally {
       setLoading(false);
     }

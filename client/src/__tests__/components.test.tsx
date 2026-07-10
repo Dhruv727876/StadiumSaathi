@@ -58,6 +58,56 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
       expect(screen.getByText(/Smart Wayfinding/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Calculate Route/i })).toBeInTheDocument();
     });
+
+    it('asserts that selecting a wheelchair-accessible profile changes the route hints in the request payload', async () => {
+      const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(() =>
+        Promise.resolve({
+          json: () => Promise.resolve({ success: true, response: 'STADIUM_GUIDANCE: Accessible path' }),
+        } as Response)
+      );
+
+      const { rerender } = render(
+        <Wayfinding
+          languageCode="en"
+          apiUrl="http://localhost:5000"
+          accessibilityProfile="wheelchair access"
+        />
+      );
+
+      const routeButton = screen.getByRole('button', { name: /Calculate Route/i });
+      fireEvent.click(routeButton);
+
+      // Wait for the button to reset from loading
+      const activeBtn = await screen.findByRole('button', { name: /Calculate Route/i });
+
+      expect(fetchSpy).toHaveBeenCalled();
+      const firstCallArgs = fetchSpy.mock.calls[0];
+      const payloadWithWheelchair = JSON.parse(firstCallArgs?.[1]?.body as string);
+      
+      expect(payloadWithWheelchair.message).toContain('Elevator A');
+
+      fetchSpy.mockClear();
+      rerender(
+        <Wayfinding
+          languageCode="en"
+          apiUrl="http://localhost:5000"
+          accessibilityProfile="none"
+        />
+      );
+
+      fireEvent.click(activeBtn);
+      
+      // Wait for loading to finish again
+      await screen.findByRole('button', { name: /Calculate Route/i });
+
+      const secondCallArgs = fetchSpy.mock.calls[0];
+      const payloadStandard = JSON.parse(secondCallArgs?.[1]?.body as string);
+      
+      expect(payloadStandard.message).toContain('West Concourse');
+      expect(payloadStandard.message).not.toContain('Elevator A');
+
+      fetchSpy.mockRestore();
+    });
   });
 
   // 5. Transportation Tests
@@ -66,6 +116,34 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
       render(<Transportation languageCode="en" apiUrl="http://localhost:5000" />);
       expect(screen.getByText(/Transportation & Parking/i)).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Get AI Recommendation/i })).toBeInTheDocument();
+    });
+
+    it('asserts that kickoffMinutes < 15 results in correct preferredOption and urgency in prompt payload', async () => {
+      const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(() =>
+        Promise.resolve({
+          json: () => Promise.resolve({ success: true, response: 'STADIUM_GUIDANCE: Fast transit' }),
+        } as Response)
+      );
+
+      render(<Transportation languageCode="en" apiUrl="http://localhost:5000" />);
+
+      const minutesInput = screen.getByLabelText(/Minutes to Kickoff/i);
+      fireEvent.change(minutesInput, { target: { value: '10' } });
+
+      const getRecButton = screen.getByRole('button', { name: /Get AI Recommendation/i });
+      fireEvent.click(getRecButton);
+
+      // Wait for the button to reset from loading
+      await screen.findByRole('button', { name: /Get AI Recommendation/i });
+
+      expect(fetchSpy).toHaveBeenCalled();
+      const callArgs = fetchSpy.mock.calls[0];
+      const payload = JSON.parse(callArgs?.[1]?.body as string);
+
+      expect(payload.message).toContain('Central Metro Hub');
+      expect(payload.message).toContain('urgency flag set to true');
+
+      fetchSpy.mockRestore();
     });
   });
 });
