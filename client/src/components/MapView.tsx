@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { logger } from '../utils/logger';
 import { STADIUM_COORDINATES, STADIUM_MARKERS } from '../constants';
 
@@ -45,6 +45,30 @@ export function MapView({ selectedZone, onSelectZone }: MapViewProps): React.JSX
   const mapRef = useRef<HTMLDivElement>(null);
   const [mapsApiLoaded, setMapsApiLoaded] = useState<boolean>(false);
   const [fallbackMode, setFallbackMode] = useState<boolean>(false);
+
+  // Keyboard navigation handler for map nodes via arrow keys
+  const handleKeyDown = useCallback((e: React.KeyboardEvent, index: number) => {
+    let nextIndex = index;
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') {
+      e.preventDefault();
+      nextIndex = (index + 1) % STADIUM_MARKERS.length;
+    } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      nextIndex = (index - 1 + STADIUM_MARKERS.length) % STADIUM_MARKERS.length;
+    } else {
+      return;
+    }
+    const targetMarker = STADIUM_MARKERS[nextIndex];
+    if (targetMarker && onSelectZone) {
+      onSelectZone(targetMarker.title);
+    }
+
+    // Set focus to the newly selected element
+    const buttonElement = document.getElementById(`map-card-${nextIndex}`);
+    if (buttonElement) {
+      buttonElement.focus();
+    }
+  }, [onSelectZone]);
 
   useEffect(() => {
     // Check if script is already loaded
@@ -117,7 +141,11 @@ export function MapView({ selectedZone, onSelectZone }: MapViewProps): React.JSX
 
   if (fallbackMode) {
     return (
-      <div className="w-full h-80 rounded-xl bg-slate-800 border border-slate-700 flex flex-col justify-between p-6 relative overflow-hidden">
+      <div 
+        role="region"
+        aria-label="Stadium Navigation Map (Offline Fallback)"
+        className="w-full h-80 rounded-xl bg-slate-800 border border-slate-700 flex flex-col justify-between p-6 relative overflow-hidden"
+      >
         <div>
           <h3 className="text-md font-bold text-slate-100 flex items-center space-x-2">
             <span>🗺️</span>
@@ -128,23 +156,35 @@ export function MapView({ selectedZone, onSelectZone }: MapViewProps): React.JSX
           </p>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 my-4 z-10">
-          {STADIUM_MARKERS.map((m) => (
-            <button
-              key={m.title}
-              onClick={() => onSelectZone && onSelectZone(m.title)}
-              className={`p-3 rounded-lg border text-left transition-all ${
-                selectedZone === m.title
-                  ? 'bg-blue-600/25 border-blue-500 text-blue-300'
-                  : 'bg-slate-900/50 border-slate-700 hover:border-slate-600 text-slate-300'
-              }`}
-            >
-              <div className="text-xs font-semibold">{m.title}</div>
-              <span className="text-[10px] uppercase text-slate-500 tracking-wider">
-                {m.category}
-              </span>
-            </button>
-          ))}
+        <div 
+          role="radiogroup"
+          aria-label="Select stadium zone to examine details"
+          className="grid grid-cols-2 sm:grid-cols-3 gap-3 my-4 z-10"
+        >
+          {STADIUM_MARKERS.map((m, idx) => {
+            const isSelected = selectedZone === m.title;
+            return (
+              <button
+                key={m.title}
+                id={`map-card-${idx}`}
+                onClick={() => onSelectZone && onSelectZone(m.title)}
+                onKeyDown={(e) => handleKeyDown(e, idx)}
+                role="radio"
+                aria-checked={isSelected}
+                tabIndex={isSelected ? 0 : -1}
+                className={`p-3 h-12 rounded-lg border text-left transition-all ${
+                  isSelected
+                    ? 'bg-blue-600/25 border-blue-500 text-blue-300'
+                    : 'bg-slate-900/50 border-slate-700 hover:border-slate-600 text-slate-300'
+                }`}
+              >
+                <div className="text-xs font-semibold">{m.title}</div>
+                <span className="text-[10px] uppercase text-slate-500 tracking-wider">
+                  {m.category}
+                </span>
+              </button>
+            );
+          })}
         </div>
 
         <div className="text-[11px] text-slate-500 border-t border-slate-700/50 pt-2 flex justify-between">

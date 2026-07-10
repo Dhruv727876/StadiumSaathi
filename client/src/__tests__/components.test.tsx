@@ -25,6 +25,22 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
       fireEvent.click(eastButton);
       expect(selectZoneSpy).toHaveBeenCalledWith('East Stand');
     });
+
+    it('asserts radiogroup role, checked states, and arrow key focus navigation', () => {
+      const selectZoneSpy = vi.fn();
+      render(<MapView selectedZone="North Gate" onSelectZone={selectZoneSpy} />);
+      
+      expect(screen.getByRole('radiogroup', { name: /Select stadium zone to examine details/i })).toBeInTheDocument();
+
+      const northRadio = screen.getByRole('radio', { name: /North Gate/i });
+      const southRadio = screen.getByRole('radio', { name: /South Gate/i });
+
+      expect(northRadio).toHaveAttribute('aria-checked', 'true');
+      expect(southRadio).toHaveAttribute('aria-checked', 'false');
+
+      fireEvent.keyDown(northRadio, { key: 'ArrowDown', code: 'ArrowDown' });
+      expect(selectZoneSpy).toHaveBeenCalledWith('South Gate');
+    });
   });
 
   // 2. CrowdDashboard Tests
