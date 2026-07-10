@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { logger } from '../utils/logger';
+import { STADIUM_COORDINATES, STADIUM_MARKERS } from '../constants';
 
 declare global {
   interface Window {
@@ -35,23 +36,6 @@ export interface MapViewProps {
   /** Callback triggered when a sector marker is clicked */
   onSelectZone?: (zoneName: string) => void;
 }
-
-interface StadiumMarker {
-  title: string;
-  position: { lat: number; lng: number };
-  category: 'gate' | 'zone' | 'transport';
-}
-
-const STADIUN_COORDINATES = { lat: 25.8038, lng: -80.1384 }; // Hardcoded center (e.g. Miami Hard Rock Stadium)
-
-const MARKERS: StadiumMarker[] = [
-  { title: 'North Gate', position: { lat: 25.8050, lng: -80.1384 }, category: 'gate' },
-  { title: 'South Gate', position: { lat: 25.8026, lng: -80.1384 }, category: 'gate' },
-  { title: 'East Stand', position: { lat: 25.8038, lng: -80.1365 }, category: 'zone' },
-  { title: 'West VIP Lounge', position: { lat: 25.8038, lng: -80.1403 }, category: 'zone' },
-  { title: 'Metro Connection Hub', position: { lat: 25.8010, lng: -80.1384 }, category: 'transport' },
-  { title: 'Bus Shuttle Link', position: { lat: 25.8065, lng: -80.1384 }, category: 'transport' }
-];
 
 /**
  * Renders an interactive map representing gates, zones, and transport hubs.
@@ -101,7 +85,7 @@ export function MapView({ selectedZone, onSelectZone }: MapViewProps): React.JSX
 
     try {
       const map = new googleInstance.maps.Map(mapRef.current, {
-        center: STADIUN_COORDINATES,
+        center: STADIUM_COORDINATES,
         zoom: 16,
         styles: [
           { elementType: 'geometry', stylers: [{ color: '#1e293b' }] },
@@ -111,7 +95,7 @@ export function MapView({ selectedZone, onSelectZone }: MapViewProps): React.JSX
         ]
       });
 
-      MARKERS.forEach((markerInfo) => {
+      STADIUM_MARKERS.forEach((markerInfo) => {
         const marker = new googleInstance.maps.Marker({
           position: markerInfo.position,
           map: map,
@@ -145,7 +129,7 @@ export function MapView({ selectedZone, onSelectZone }: MapViewProps): React.JSX
         </div>
 
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 my-4 z-10">
-          {MARKERS.map((m) => (
+          {STADIUM_MARKERS.map((m) => (
             <button
               key={m.title}
               onClick={() => onSelectZone && onSelectZone(m.title)}

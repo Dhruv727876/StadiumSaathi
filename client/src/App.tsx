@@ -122,6 +122,41 @@ export default function App(): React.JSX.Element {
     return () => unsubscribe();
   }, []);
 
+  // Start simulated crowd congestion updater for demo purposes
+  useEffect(() => {
+    if (!currentUser) return;
+
+    const SECTORS = ['North Gate', 'South Gate', 'East Stand', 'West VIP Lounge', 'Metro Connection Hub', 'Bus Shuttle Link'];
+    const STATUSES = ['low', 'medium', 'high'] as const;
+
+    const updateSimulatedCongestion = async () => {
+      try {
+        const congestionDocRef = doc(db, 'congestion', 'current_status');
+        const updates: Record<string, { status: string; updatedAt: string }> = {};
+
+        SECTORS.forEach((sector) => {
+          const randomStatus = STATUSES[Math.floor(Math.random() * STATUSES.length)] || 'low';
+          updates[sector] = {
+            status: randomStatus,
+            updatedAt: new Date().toISOString()
+          };
+        });
+
+        // Note: This is a simulated demo data generator standing in for a real operational data feed.
+        // In a production version, this would be updated by a venue sensor/ops system rather than client-side simulation.
+        await setDoc(congestionDocRef, updates, { merge: true });
+        logger.info('Simulated crowd congestion statuses updated in Firestore');
+      } catch (err) {
+        logger.error('Failed to write simulated crowd congestion status:', err);
+      }
+    };
+
+    updateSimulatedCongestion();
+    const interval = setInterval(updateSimulatedCongestion, 20000);
+
+    return () => clearInterval(interval);
+  }, [currentUser]);
+
   // Save User Profile to Firestore (merge: true)
   const saveUserProfile = useCallback(async (
     lang: string,

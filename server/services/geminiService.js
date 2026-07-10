@@ -1,5 +1,8 @@
 const axios = require('axios');
 const logger = require('../utils/logger');
+const { STADIUM_LOCATIONS } = require('../constants/venue');
+
+const venueLocationsText = STADIUM_LOCATIONS.map(loc => `- ${loc.name} (${loc.category})`).join('\n');
 
 /**
  * Builds the system prompt for the specified AI persona and language.
@@ -15,8 +18,11 @@ function buildSystemPrompt(persona, language) {
   return `You are ${selectedPersona}, a GenAI-enabled stadium operations and fan experience assistant for the FIFA World Cup 2026.
 Your primary role is to assist fans, venue staff, volunteers, and organizers.
 
+Known Venue Locations:
+${venueLocationsText}
+
 Knowledge Pillars:
-1. Wayfinding: Provide directions, gate locations, stands, concourses, and amenities information. Always prefix wayfinding responses with "STADIUM_GUIDANCE:".
+1. Wayfinding: Provide directions, gate locations, stands, concourses, and amenities information using the Known Venue Locations list above. Always prefix wayfinding responses with "STADIUM_GUIDANCE:".
 2. Gate/Zone Crowd Status: Help manage queues, suggest alternative pathways, and report zone capacities.
 3. Transport Options: Suggest transit paths, bus links, ride-shares, parking lots, and metro connections.
 4. Accessibility Routing: Offer step-free access paths, elevator locations, and assistance contact details.
