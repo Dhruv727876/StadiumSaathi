@@ -37,7 +37,7 @@ Each capability called for in the problem statement is implemented by a dedicate
  ## ✨ Features
  | # | Feature | Description |
  |---|---|---|
- | 1 | **Interactive Map (MapView)** | Renders an interactive map of gates, zones, and transport hubs. Integrates with the Google Maps JS API and falls back to a clean mock visual layout if the API fails to load or no API key is provided. |
+ | 1 | **Interactive Map (MapView)** | Renders an interactive map of gates, zones, and transport hubs. Integrates with the Google Maps JS API and falls back to a clean mock visual layout if the API fails to load or no API key is provided. The fallback mock mode uses a fully accessible `radiogroup` button grid with `radio` roles, `aria-checked` states, and arrow-key focus navigation to ensure screen reader compliance. |
  | 2 | **Smart Wayfinding (Wayfinding)** | Computes step-by-step navigation instructions using AI queries customized to the user's starting point, destination gate, language, and accessibility preferences. |
  | 3 | **Crowd Density Tracking (CrowdDashboard)** | Syncs color-coded regional congestion statuses (`low`, `medium`, `high`) from Firestore with an automatic 10-second interval refresh. Metrics are updated every 20 seconds by a simulated client-side loop (inside `App.tsx` writing randomized status values for sectors like North/South Gates, East/West Stands, Metro, and Bus hubs via `setDoc` with `merge:true`) standing in for a real-world venue sensor/IoT feed. |
  | 4 | **Accessibility Configuration (AccessibilitySetup)** | Toggles and saves accessibility requirements (Wheelchair Routing, Sensory-Friendly Zones, Step-Free Access) to user profiles to tailor AI route instructions. |
@@ -256,7 +256,7 @@ npm run test
 | Test file | What it covers |
 |---|---|
 | `useMainHook.test.ts` | Tests main state machine handling, empty query handling, loading toggle behavior, capture of API error responses, and error reset functions. |
-| `components.test.tsx` | Asserts successful render states, mock map click callbacks, accessibility toggle changes, wayfinding drop-downs, and transportation kickoff triggers. |
+| `components.test.tsx` | Asserts successful render states, MapView radiogroup ARIA compliance and arrow key navigation, AccessibilitySetup preferences, Wayfinding accessibility route redirection, and Transportation kickoff urgency triggers. |
 
 ---
 
