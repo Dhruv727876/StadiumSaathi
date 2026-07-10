@@ -15,6 +15,9 @@ const STADIUM_LOCATIONS = [
   { name: 'Bus Shuttle Gate', category: 'transport', coordinates: { lat: 25.8065, lng: -80.1384 } }
 ];
 
+/**
+ * Exported venue constants module.
+ */
 module.exports = {
   STADIUM_LOCATIONS
 };

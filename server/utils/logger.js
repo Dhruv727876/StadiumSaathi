@@ -1,3 +1,5 @@
+const util = require('util');
+
 /**
  * Server side logger utility that routes logs with levels.
  */
@@ -9,8 +11,7 @@ const logger = {
    * @param {...unknown} args - Supporting details.
    */
   info: (message, ...args) => {
-    // eslint-disable-next-line no-console
-    console.log(`[INFO] ${message}`, ...args);
+    process.stdout.write(util.format(`[INFO] ${message}`, ...args) + '\n');
   },
 
   /**
@@ -20,8 +21,7 @@ const logger = {
    * @param {...unknown} args - Supporting details.
    */
   warn: (message, ...args) => {
-    // eslint-disable-next-line no-console
-    console.warn(`[WARN] ${message}`, ...args);
+    process.stderr.write(util.format(`[WARN] ${message}`, ...args) + '\n');
   },
 
   /**
@@ -31,8 +31,7 @@ const logger = {
    * @param {...unknown} args - Supporting details.
    */
   error: (message, ...args) => {
-    // eslint-disable-next-line no-console
-    console.error(`[ERROR] ${message}`, ...args);
+    process.stderr.write(util.format(`[ERROR] ${message}`, ...args) + '\n');
   }
 };
 

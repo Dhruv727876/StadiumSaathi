@@ -19,8 +19,7 @@ if (process.env.NODE_ENV !== 'test') {
   const geminiKey = process.env.GEMINI_API_KEY;
   const mapsKey = process.env.GOOGLE_MAPS_API_KEY;
   if (!geminiKey || !mapsKey) {
-    // eslint-disable-next-line no-console
-    console.error('[CRITICAL] Mandatory environment variables GEMINI_API_KEY or GOOGLE_MAPS_API_KEY are missing. Exiting server.');
+    process.stderr.write('[CRITICAL] Mandatory environment variables GEMINI_API_KEY or GOOGLE_MAPS_API_KEY are missing. Exiting server.\n');
     process.exit(1);
   }
 }
@@ -186,8 +185,7 @@ const PORT = process.env.PORT || 5000;
 let server;
 if (process.env.NODE_ENV !== 'test') {
   server = app.listen(PORT, () => {
-    // eslint-disable-next-line no-console
-    console.log(`[SERVER] StadiumSaathi operational on port ${PORT}`);
+    process.stdout.write(`[SERVER] StadiumSaathi operational on port ${PORT}\n`);
   });
 }
 

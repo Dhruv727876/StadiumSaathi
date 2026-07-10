@@ -1,6 +1,5 @@
 const aiService = require('../services/aiService');
 const { geminiService, buildSystemPrompt } = require('../services/geminiService');
-const gemmaService = require('../services/gemmaService');
 
 jest.mock('../services/geminiService', () => {
   const original = jest.requireActual('../services/geminiService');
