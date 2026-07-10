@@ -278,5 +278,8 @@ The custom `buildSystemPrompt` systematically constructs instructions:
 
 ---
 
+## ⚠️ Known Issues / Dependency Notes
+The client contains minor remaining dev-dependency vulnerabilities in the Vite/Vitest toolchain, including a critical vulnerability in `vitest` UI server (`GHSA-5xrq-8626-4rwp` / arbitrary file read) and moderate/high vulnerabilities in `esbuild`/`vite` (`GHSA-67mh-4wv8-2f99` / server request reading; `GHSA-fx2h-pf6j-xcff` / bypass on Windows). These are restricted entirely to dev-time tooling and do not impact runtime or production code. Upgrading these dependencies would force a breaking Vite 8 migration, so leaving them is a deliberate, deferred project decision.
+
 ## 📜 License
 Built exclusively for the **Hack2Skill FIFA World Cup 2026 Challenge** · Data grounded in stadium operations and accessibility parameters · *Empowering collective progress towards a seamless tournament experience.*
