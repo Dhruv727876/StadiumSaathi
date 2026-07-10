@@ -218,7 +218,21 @@ npm test
   ```json
   {
     "error": "Bad Request",
-    "message": "The request body must contain a non-empty \"message\" string."
+    "errors": [
+      {
+        "type": "field",
+        "msg": "Invalid value",
+        "path": "message",
+        "location": "body"
+      },
+      {
+        "type": "field",
+        "value": "",
+        "msg": "Message parameter is required",
+        "path": "message",
+        "location": "body"
+      }
+    ]
   }
   ```
 
