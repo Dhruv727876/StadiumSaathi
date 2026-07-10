@@ -24,25 +24,25 @@ The platform integrates directly with Google Maps to render spatial marker maps,
 ## How StadiumSaathi Addresses This
 Each capability called for in the problem statement is implemented by a dedicated file or component in this repository:
 - **Navigation**: Managed visually via the interactive map component [MapView.tsx](client/src/components/MapView.tsx) and AI routing paths inside [Wayfinding.tsx](client/src/components/Wayfinding.tsx).
-- **Crowd Management**: Handled via interval-based Firestore congestion feeds in [CrowdDashboard.tsx](client/src/components/CrowdDashboard.tsx).
+- **Crowd Management**: Handled via interval-based Firestore congestion feeds in [CrowdDashboard.tsx](client/src/components/CrowdDashboard.tsx), which are periodically updated in the background every 20 seconds by a simulated client-side generator in [App.tsx](client/src/App.tsx) simulating operational venue sensor node transmissions.
 - **Accessibility**: Customized path recommendations mapped from spectator selections inside [AccessibilitySetup.tsx](client/src/components/AccessibilitySetup.tsx).
 - **Transportation**: Calculated travel and parking options mapped relative to kickoff timings inside [Transportation.tsx](client/src/components/Transportation.tsx).
 - **Sustainability**: Handled via Eco-friendly wayfinding guidelines and waste-reduction hints inside the system prompt builder in [geminiService.js](server/services/geminiService.js).
 - **Multilingual Assistance**: Driven by user language selections mapped in [App.tsx](client/src/App.tsx) and compiled inside the system prompt in [geminiService.js](server/services/geminiService.js).
 - **Operational Intelligence**: Driven by server-side AI model routing rules in [aiService.js](server/services/aiService.js), ensuring models coordinate to offer operational insights.
 - **Real-Time Decision Support**: Programmed inside the custom AI system prompt builder in [geminiService.js](server/services/geminiService.js), giving immediate actionable instructions to fans and staff.
-
----
-
-## ✨ Features
-| # | Feature | Description |
-|---|---|---|
-| 1 | **Interactive Map (MapView)** | Renders an interactive map of gates, zones, and transport hubs. Integrates with the Google Maps JS API and falls back to a clean mock visual layout if the API fails to load or no API key is provided. |
-| 2 | **Smart Wayfinding (Wayfinding)** | Computes step-by-step navigation instructions using AI queries customized to the user's starting point, destination gate, language, and accessibility preferences. |
-| 3 | **Crowd Density Tracking (CrowdDashboard)** | Syncs color-coded regional congestion statuses (`low`, `medium`, `high`) from Firestore with an automatic 10-second interval refresh to prevent overcrowding. |
-| 4 | **Accessibility Configuration (AccessibilitySetup)** | Toggles and saves accessibility requirements (Wheelchair Routing, Sensory-Friendly Zones, Step-Free Access) to user profiles to tailor AI route instructions. |
-| 5 | **kickoff-Aligned Transportation** | Suggests optimal transportation and parking hubs relative to minutes remaining before the kickoff time to minimize exit delay bottlenecks. |
-| 6 | **Persona-Driven Assistant** | Builds dynamic prompts grounding the assistant in tournament guides, safety protocols, and venue-specific data while avoiding pricing hallucinations. |
+ 
+ ---
+ 
+ ## ✨ Features
+ | # | Feature | Description |
+ |---|---|---|
+ | 1 | **Interactive Map (MapView)** | Renders an interactive map of gates, zones, and transport hubs. Integrates with the Google Maps JS API and falls back to a clean mock visual layout if the API fails to load or no API key is provided. |
+ | 2 | **Smart Wayfinding (Wayfinding)** | Computes step-by-step navigation instructions using AI queries customized to the user's starting point, destination gate, language, and accessibility preferences. |
+ | 3 | **Crowd Density Tracking (CrowdDashboard)** | Syncs color-coded regional congestion statuses (`low`, `medium`, `high`) from Firestore with an automatic 10-second interval refresh. Metrics are updated every 20 seconds by a simulated client-side loop (inside `App.tsx` writing randomized status values for sectors like North/South Gates, East/West Stands, Metro, and Bus hubs via `setDoc` with `merge:true`) standing in for a real-world venue sensor/IoT feed. |
+ | 4 | **Accessibility Configuration (AccessibilitySetup)** | Toggles and saves accessibility requirements (Wheelchair Routing, Sensory-Friendly Zones, Step-Free Access) to user profiles to tailor AI route instructions. |
+ | 5 | **kickoff-Aligned Transportation** | Suggests optimal transportation and parking hubs relative to minutes remaining before the kickoff time to minimize exit delay bottlenecks. |
+ | 6 | **Persona-Driven Assistant** | Builds dynamic prompts grounding the assistant in tournament guides, safety protocols, and venue-specific data while avoiding pricing hallucinations. |
 
 ---
 
@@ -264,8 +264,9 @@ To safeguard API keys, the React frontend application never queries Google Gemin
 The custom `buildSystemPrompt` systematically constructs instructions:
 1. **Identity Context**: Dictates that the AI acts as a dedicated operations assistant helping spectators, staff, and organizers during the FIFA World Cup 2026.
 2. **8 Knowledge Pillars**: Directs responses within strict boundaries: Wayfinding (marking routes with a `STADIUM_GUIDANCE:` prefix), Congestion mitigation, Transport advice, Accessibility Routing, Sustainability recommendations, Tournament Schedule details, Emergency procedures, and Language preference handling.
-3. **Hard Limits**: Enforces dependencies on real data. Explicitly prohibits the generation of mock seat numbers or match ticket pricing.
-4. **Format Directives**: Mandates the prefixing of wayfinding responses and requires every response to end with exactly one concrete next action for the user.
+3. **Known Venue Locations Grounding**: Injects a list of verified stadium coordinates, gates, zones, stands, and parking lots (from `server/constants/venue.js`) to provide real grounding data, preventing the model from refusing wayfinding requests due to a lack of verified spatial knowledge.
+4. **Hard Limits**: Enforces dependencies on real data. Explicitly prohibits the generation of mock seat numbers or match ticket pricing.
+5. **Format Directives**: Mandates the prefixing of wayfinding responses and requires every response to end with exactly one concrete next action for the user.
 
 ---
 
