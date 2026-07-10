@@ -148,6 +148,11 @@ Keeps track of current density configurations in the stadium zones:
 }
 ```
 
+### Firestore Security Rules
+Firestore rules in [`firestore.rules`](firestore.rules) enforce strict validation on data updates, replacing fully open write access:
+- **Reads**: Open to all authenticated sessions to support transparent public congestion views.
+- **Writes**: Strictly validated server-side. Updates must target only the six recognized sectors, and each updated sector's nested data must contain a `status` of exactly `'low'`, `'medium'`, or `'high'`, and an `updatedAt` string.
+
 ---
 
 ## 🚀 Setup & Installation
@@ -267,6 +272,12 @@ The custom `buildSystemPrompt` systematically constructs instructions:
 3. **Known Venue Locations Grounding**: Injects a list of verified stadium coordinates, gates, zones, stands, and parking lots (from `server/constants/venue.js`) to provide real grounding data, preventing the model from refusing wayfinding requests due to a lack of verified spatial knowledge.
 4. **Hard Limits**: Enforces dependencies on real data. Explicitly prohibits the generation of mock seat numbers or match ticket pricing.
 5. **Format Directives**: Mandates the prefixing of wayfinding responses and requires every response to end with exactly one concrete next action for the user.
+
+### Code-Level Decision Pre-Processing
+To ensure inspectable logic, core routing and dispatching decisions are computed in client code *before* invoking GenAI APIs, limiting the LLM's role to phrasing and localizing instructions:
+- **Wayfinding Path Selection**: [`Wayfinding.tsx`](client/src/components/Wayfinding.tsx) looks up starting and ending location pairs in the static `ROUTE_RULES` database. If the user's accessibility profile contains `"wheelchair"` or `"step-free"`, the code automatically switches to the `accessibleAlternative` (e.g. using `Elevator A` / `VIP Ramp` / `VIP Elevator`) rather than the default `viaPath`, before passing these instructions as grounding constraints to the prompt.
+- **Kickoff-Aligned Transport**: [`Transportation.tsx`](client/src/components/Transportation.tsx) performs time-based branching on `kickoffMinutes`. If kickoff is under 15 minutes, it flags the request as urgent and prioritizes the closest walking transit option (Central Metro Hub, 8 mins). Between 15 and 45 minutes, it prioritizes public transit options over standard parking lots to mitigate exit bottlenecks.
+- **AI Phrasing Delegation**: The LLM's role for these features is to phrase, translate, and format recommendations cleanly in the target language (`languageCode`), rather than inventing paths or making transit decisions.
 
 ---
 
