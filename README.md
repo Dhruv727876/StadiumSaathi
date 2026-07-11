@@ -287,11 +287,7 @@ To ensure inspectable logic, core routing and dispatching decisions are computed
 3. **Model Fallback Constraints**: Assumes that Google Gemini `gemini-2.5-flash` is the primary AI provider, with automatic failover to NVIDIA NIM's `google/gemma-2-9b-it` only if requests fail or exceed a 25-second timeout.
 4. **Static Venue Gates**: Assumes that the locations of gates (North, South, East, West) and transport links remain static during active matches.
 5. **Rate-limiting Boundaries**: Assumes that rate-limiting metrics (20 calls per minute) are sufficient to handle natural user conversations while preventing malicious endpoint floods.
-
 ---
-
-## ⚠️ Known Issues / Dependency Notes
-The client contains minor remaining dev-dependency vulnerabilities in the Vite/Vitest toolchain, including a critical vulnerability in `vitest` UI server (`GHSA-5xrq-8626-4rwp` / arbitrary file read) and moderate/high vulnerabilities in `esbuild`/`vite` (`GHSA-67mh-4wv8-2f99` / server request reading; `GHSA-fx2h-pf6j-xcff` / bypass on Windows). These are restricted entirely to dev-time tooling and do not impact runtime or production code. Upgrading these dependencies would force a breaking Vite 8 migration, so leaving them is a deliberate, deferred project decision.
 
 ## 📜 License
 Built exclusively for the **Hack2Skill FIFA World Cup 2026 Challenge** · Data grounded in stadium operations and accessibility parameters · *Empowering collective progress towards a seamless tournament experience.*
