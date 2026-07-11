@@ -18,8 +18,9 @@ const aiService = require('./services/aiService');
 if (process.env.NODE_ENV !== 'test') {
   const geminiKey = process.env.GEMINI_API_KEY;
   const mapsKey = process.env.GOOGLE_MAPS_API_KEY;
-  if (!geminiKey || !mapsKey) {
-    process.stderr.write('[CRITICAL] Mandatory environment variables GEMINI_API_KEY or GOOGLE_MAPS_API_KEY are missing. Exiting server.\n');
+  const nvidiaKey = process.env.NVIDIA_API_KEY;
+  if (!geminiKey || !mapsKey || !nvidiaKey) {
+    process.stderr.write('[CRITICAL] Mandatory environment variables GEMINI_API_KEY, GOOGLE_MAPS_API_KEY or NVIDIA_API_KEY are missing. Exiting server.\n');
     process.exit(1);
   }
 }

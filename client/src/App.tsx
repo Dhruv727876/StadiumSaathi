@@ -361,7 +361,6 @@ export default function App(): React.JSX.Element {
               <CrowdDashboard
                 selectedZone={selectedZone}
                 onSelectZone={handleSelectZone}
-                userUid={currentUser?.uid}
               />
             </Suspense>
 

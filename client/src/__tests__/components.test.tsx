@@ -124,6 +124,21 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
 
       fetchSpy.mockRestore();
     });
+
+    it('asserts offline fallback behavior when fetch fails', async () => {
+      const fetchSpy = vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network Offline'));
+
+      render(<Wayfinding languageCode="en" apiUrl="http://localhost:5000" />);
+
+      const routeButton = screen.getByRole('button', { name: /Calculate Route/i });
+      fireEvent.click(routeButton);
+
+      await screen.findByRole('button', { name: /Calculate Route/i });
+
+      expect(screen.getByText(/Offline Fallback: STADIUM_GUIDANCE/i)).toBeInTheDocument();
+
+      fetchSpy.mockRestore();
+    });
   });
 
   // 5. Transportation Tests
@@ -158,6 +173,75 @@ describe('StadiumSaathi Component Render & Interaction Tests', () => {
 
       expect(payload.message).toContain('Central Metro Hub');
       expect(payload.message).toContain('urgency flag set to true');
+
+      fetchSpy.mockRestore();
+    });
+
+    it('asserts that kickoffMinutes >= 15 && kickoffMinutes < 45 results in Central Metro Hub and urgency flag false in payload', async () => {
+      const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(() =>
+        Promise.resolve({
+          json: () => Promise.resolve({ success: true, response: 'STADIUM_GUIDANCE: Normal transit' }),
+        } as Response)
+      );
+
+      render(<Transportation languageCode="en" apiUrl="http://localhost:5000" />);
+
+      const minutesInput = screen.getByLabelText(/Minutes to Kickoff/i);
+      fireEvent.change(minutesInput, { target: { value: '30' } });
+
+      const getRecButton = screen.getByRole('button', { name: /Get AI Recommendation/i });
+      fireEvent.click(getRecButton);
+
+      await screen.findByRole('button', { name: /Get AI Recommendation/i });
+
+      expect(fetchSpy).toHaveBeenCalled();
+      const callArgs = fetchSpy.mock.calls[0];
+      const payload = JSON.parse(callArgs?.[1]?.body as string);
+
+      expect(payload.message).toContain('Central Metro Hub');
+      expect(payload.message).toContain('urgency flag set to false');
+
+      fetchSpy.mockRestore();
+    });
+
+    it('asserts that kickoffMinutes >= 45 results in Parking Lot A (West) and urgency flag false in payload', async () => {
+      const fetchSpy = vi.spyOn(global, 'fetch').mockImplementation(() =>
+        Promise.resolve({
+          json: () => Promise.resolve({ success: true, response: 'STADIUM_GUIDANCE: Safe transit' }),
+        } as Response)
+      );
+
+      render(<Transportation languageCode="en" apiUrl="http://localhost:5000" />);
+
+      const minutesInput = screen.getByLabelText(/Minutes to Kickoff/i);
+      fireEvent.change(minutesInput, { target: { value: '60' } });
+
+      const getRecButton = screen.getByRole('button', { name: /Get AI Recommendation/i });
+      fireEvent.click(getRecButton);
+
+      await screen.findByRole('button', { name: /Get AI Recommendation/i });
+
+      expect(fetchSpy).toHaveBeenCalled();
+      const callArgs = fetchSpy.mock.calls[0];
+      const payload = JSON.parse(callArgs?.[1]?.body as string);
+
+      expect(payload.message).toContain('Parking Lot A (West)');
+      expect(payload.message).toContain('urgency flag set to false');
+
+      fetchSpy.mockRestore();
+    });
+
+    it('asserts offline fallback behavior when fetch fails', async () => {
+      const fetchSpy = vi.spyOn(global, 'fetch').mockRejectedValueOnce(new Error('Network Offline'));
+
+      render(<Transportation languageCode="en" apiUrl="http://localhost:5000" />);
+
+      const getRecButton = screen.getByRole('button', { name: /Get AI Recommendation/i });
+      fireEvent.click(getRecButton);
+
+      await screen.findByRole('button', { name: /Get AI Recommendation/i });
+
+      expect(screen.getByText(/Offline Fallback: STADIUM_GUIDANCE/i)).toBeInTheDocument();
 
       fetchSpy.mockRestore();
     });

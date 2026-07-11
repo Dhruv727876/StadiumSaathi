@@ -195,6 +195,7 @@ npm start
 ```bash
 cd ../client
 npm install
+npm run build  # Builds production assets for Firebase Hosting deployment
 npm run dev
 ```
 
@@ -211,9 +212,10 @@ npm test
 | Test file | What it covers |
 |---|---|
 | `health.test.js` | Verifies health check status (`UP`), server timestamp format, and response latency (<200ms). |
-| `chat.test.js` | Asserts standard route operations, character caps, missing parameter rejections, and mock generation processing. |
+| `chat.test.js` | Asserts standard route operations, character caps, missing parameter rejections, mock generation processing, and sanitization on Gemini/Gemma double failures. |
 | `security.test.js` | Asserts Helmet headers are present, request payloads exceeding limits are blocked, and malicious XSS strings are escaped. |
 | `gemini.test.js` | Validates custom persona compilation, fallback default persona injection, next-action format compliance, and output parsing. |
+| `aiService.test.js` | Asserts primary Gemini service execution, Gemma fallback resolution, and double-failure exception propagation. |
 
 #### Example Request & Validation Behavior
 
@@ -256,7 +258,7 @@ npm run test
 | Test file | What it covers |
 |---|---|
 | `useMainHook.test.ts` | Tests main state machine handling, empty query handling, loading toggle behavior, capture of API error responses, and error reset functions. |
-| `components.test.tsx` | Asserts successful render states, MapView radiogroup ARIA compliance and arrow key navigation, AccessibilitySetup preferences, Wayfinding accessibility route redirection, and Transportation kickoff urgency triggers. |
+| `components.test.tsx` | Asserts successful render states, MapView radiogroup ARIA compliance and arrow key navigation, AccessibilitySetup preferences, Wayfinding accessibility route redirection with offline fallbacks, and Transportation kickoff urgency/timing triggers with offline fallbacks. |
 
 ---
 

@@ -11,8 +11,6 @@ export interface CrowdDashboardProps {
   selectedZone: string;
   /** Triggered when the user changes the active zone check */
   onSelectZone: (zone: string) => void;
-  /** Active user UID for reporting metadata */
-  userUid?: string;
 }
 
 interface SectorStatus {
